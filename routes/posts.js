@@ -2,6 +2,18 @@ const { Router } = require("express");
 const express = require("express");
 const Posts = require("../models/Posts");
 const router = express.Router();
+
+// get all posts
+router.get("/", async (req, res) => {
+  try {
+    const posts = await Posts.find();
+    if (!posts) throw Error("No Items ");
+    else res.status(200).json(posts);
+  } catch (err) {
+    res.status(400).json({ msg: err });
+  }
+});
+
 // for post request creat
 
 router.post("/", async (req, res) => {
@@ -10,6 +22,28 @@ router.post("/", async (req, res) => {
     const post = await newPost.save();
     if (!post) throw Error("Something went wrong while saving the data");
     res.status(200).json(post);
+  } catch (err) {
+    res.status(400).json({ msg: err });
+  }
+});
+
+// for delete request
+router.delete("/:id", async (req, res) => {
+  try {
+    const post = await Posts.findByIdAndDelete(req.params.id);
+    if (!post) throw Error("No Posts found by the Id");
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(400).json({ msg: err });
+  }
+});
+
+// for updating a post
+router.patch("/:id", async (req, res) => {
+  try {
+    const post = await Posts.findByIdAndUpdate(req.params.id, req.body);
+    if (!post) throw Error("No Posts found by the Id");
+    res.status(200).json({ success: true });
   } catch (err) {
     res.status(400).json({ msg: err });
   }
